@@ -21,6 +21,25 @@ export default function ContactMessagesPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    // Simple authentication check
+    const isAdmin = localStorage.getItem('isAdmin')
+    if (!isAdmin) {
+      const password = prompt('Please enter admin password:')
+      if (password === 'ladakh123') {
+        localStorage.setItem('isAdmin', 'true')
+        setIsAuthenticated(true)
+        fetchMessages()
+      } else {
+        setError('Authentication failed')
+      }
+    } else {
+      setIsAuthenticated(true)
+      fetchMessages()
+    }
+  }, [])
 
   async function fetchMessages() {
     try {
@@ -37,10 +56,6 @@ export default function ContactMessagesPage() {
       setIsLoading(false)
     }
   }
-
-  useEffect(() => {
-    fetchMessages()
-  }, [])
 
   const handleDelete = async (id: string) => {
     try {
@@ -60,6 +75,20 @@ export default function ContactMessagesPage() {
     } finally {
       setDeletingId(null)
     }
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen py-12">
+        <div className="container mx-auto px-4">
+          <Card>
+            <CardContent className="p-6 text-center">
+              <p className="text-destructive">{error || 'Please authenticate to view messages.'}</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   if (isLoading) {
