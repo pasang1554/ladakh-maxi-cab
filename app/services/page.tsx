@@ -9,16 +9,30 @@ const services = [
   {
     id: 1,
     title: "Bike Rental",
-    description: "Explore Ladakh's rugged terrain on two wheels with our premium bike rental service.",
-    image: "/services/bike-rental.jpg",
+    description: "Explore Ladakh's breathtaking landscapes on two wheels with our premium bike rental service.",
+    image: "/services/bike.jpg",
     price: "₹1,500/day",
+    features: [
+      "Royal Enfield Himalayan",
+      "KTM Duke 390",
+      "BMW G310R",
+      "Full safety gear included",
+      "24/7 roadside assistance"
+    ]
   },
   {
     id: 2,
     title: "Car Rental",
-    description: "Comfortable and reliable car rental service for your Ladakh adventure.",
-    image: "/services/car-rental.jpg",
+    description: "Comfortable and reliable vehicles for your Ladakh adventure.",
+    image: "/services/car.jpg",
     price: "₹3,500/day",
+    features: [
+      "Toyota Innova",
+      "Mahindra Scorpio",
+      "Tata Safari",
+      "Professional drivers",
+      "Flexible rental options"
+    ]
   },
   {
     id: 3,
@@ -26,27 +40,55 @@ const services = [
     description: "Experience authentic Ladakhi hospitality with our carefully selected homestays.",
     image: "/services/homestay.jpg",
     price: "₹1,000/night",
+    features: [
+      "Traditional Ladakhi homes",
+      "Home-cooked meals",
+      "Cultural experiences",
+      "Comfortable rooms",
+      "Local family interaction"
+    ]
   },
   {
     id: 4,
-    title: "Local Cuisine",
-    description: "Savor authentic Ladakhi cuisine with our curated food experiences.",
-    image: "/services/food-tour.jpg",
+    title: "Food Tour",
+    description: "Savor the authentic flavors of Ladakhi cuisine with our guided food tours.",
+    image: "/services/food.jpg",
     price: "₹500/meal",
+    features: [
+      "Local restaurant visits",
+      "Traditional cooking classes",
+      "Street food exploration",
+      "Cultural food stories",
+      "Dietary accommodations"
+    ]
   },
   {
     id: 5,
-    title: "Trekking Guide",
-    description: "Professional trekking guides for safe and memorable mountain adventures.",
-    image: "/services/bike-rental.jpg",
+    title: "Trekking",
+    description: "Embark on unforgettable treks through Ladakh's stunning landscapes.",
+    image: "/services/treeking.jpg",
     price: "₹2,000/day",
+    features: [
+      "Markha Valley Trek",
+      "Stok Kangri Trek",
+      "Zanskar Valley Trek",
+      "Expert guides",
+      "All equipment provided"
+    ]
   },
   {
     id: 6,
-    title: "Cultural Tours",
-    description: "Immerse yourself in Ladakh's rich cultural heritage with guided tours.",
-    image: "/services/car-rental.jpg",
+    title: "Tours",
+    description: "Comprehensive tour packages covering all major attractions in Ladakh.",
+    image: "/services/tours.jpg",
     price: "₹1,500/tour",
+    features: [
+      "Pangong Lake",
+      "Nubra Valley",
+      "Tso Moriri",
+      "Cultural monasteries",
+      "Photography spots"
+    ]
   },
 ]
 
@@ -78,6 +120,8 @@ export default function ServicesPage() {
                       alt={service.title}
                       fill
                       className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={index < 3}
                     />
                   </div>
                   <CardContent className="p-6">

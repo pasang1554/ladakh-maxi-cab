@@ -1,12 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'export',
   images: {
-    unoptimized: true,
-  },
-  basePath: '/adventure-website',
-  assetPrefix: '/adventure-website/',
+    domains: ['localhost'],
+  }
 }
 
 module.exports = nextConfig 

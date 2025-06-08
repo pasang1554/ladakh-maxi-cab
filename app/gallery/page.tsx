@@ -1,66 +1,67 @@
 'use client'
 
 import { FadeIn, SlideIn } from "@/components/animations"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { useState } from "react"
+import { Card } from "@/components/ui/card"
 import Image from "next/image"
 
-const categories = ["All", "Landscapes", "Culture", "Adventure", "Food"]
-
-const galleryItems = [
+const galleryImages = [
   {
     id: 1,
-    title: "Ladakh Mountains",
-    description: "The stunning mountains of Ladakh",
-    image: "/gallery/adventure.jpg",
-    category: "Landscapes",
+    title: "Pangong Lake",
+    description: "The mesmerizing blue waters of Pangong Lake",
+    image: "/gallery/pangong.jpg",
   },
   {
     id: 2,
-    title: "Ladakh Culture",
-    description: "Rich cultural heritage of Ladakh",
-    image: "/gallery/adventure.jpg",
-    category: "Culture",
+    title: "Leh Palace",
+    description: "The historic Leh Palace against mountain backdrop",
+    image: "/gallery/leh-palace.jpg",
   },
   {
     id: 3,
-    title: "Adventure in Ladakh",
-    description: "Exciting adventures in Ladakh",
-    image: "/gallery/adventure.jpg",
-    category: "Adventure",
+    title: "Nubra Valley",
+    description: "The scenic beauty of Nubra Valley",
+    image: "/gallery/nubra.jpg",
   },
   {
     id: 4,
-    title: "Ladakh Cuisine",
-    description: "Traditional Ladakhi food",
-    image: "/gallery/adventure.jpg",
-    category: "Food",
+    title: "Thiksey Monastery",
+    description: "The majestic Thiksey Monastery",
+    image: "/gallery/thiksey.jpg",
   },
   {
     id: 5,
-    title: "Ladakh Valley",
-    description: "Beautiful valleys of Ladakh",
-    image: "/gallery/adventure.jpg",
-    category: "Landscapes",
+    title: "Khardung La",
+    description: "The highest motorable pass",
+    image: "/gallery/khardungla.jpg",
   },
   {
     id: 6,
-    title: "Ladakh Traditions",
-    description: "Traditional practices of Ladakh",
-    image: "/gallery/adventure.jpg",
-    category: "Culture",
+    title: "Local Culture",
+    description: "Traditional Ladakhi cultural performance",
+    image: "/gallery/culture.jpg",
   },
+  {
+    id: 7,
+    title: "Mountain Biking",
+    description: "Adventure biking in Ladakh",
+    image: "/gallery/biking.jpg",
+  },
+  {
+    id: 8,
+    title: "Camping",
+    description: "Starlit camping in Ladakh",
+    image: "/gallery/camping.jpg",
+  },
+  {
+    id: 9,
+    title: "Local Food",
+    description: "Traditional Ladakhi cuisine",
+    image: "/gallery/food.jpg",
+  }
 ]
 
 export default function GalleryPage() {
-  const [selectedCategory, setSelectedCategory] = useState("All")
-  const [selectedImage, setSelectedImage] = useState<typeof galleryItems[0] | null>(null)
-
-  const filteredItems = selectedCategory === "All"
-    ? galleryItems
-    : galleryItems.filter(item => item.category === selectedCategory)
-
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -69,26 +70,9 @@ export default function GalleryPage() {
           <FadeIn>
             <h1 className="text-4xl font-bold text-center mb-4">Photo Gallery</h1>
             <p className="text-muted-foreground text-center max-w-2xl mx-auto">
-              Explore the beauty of Ladakh through our curated collection of photographs.
+              Explore the breathtaking beauty of Ladakh through our collection of stunning photographs.
             </p>
           </FadeIn>
-        </div>
-      </section>
-
-      {/* Category Filter */}
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((category) => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -96,76 +80,26 @@ export default function GalleryPage() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredItems.map((item, index) => (
-              <SlideIn key={item.id} delay={0.1 * (index + 1)}>
-                <Card
-                  className="group cursor-pointer overflow-hidden"
-                  onClick={() => setSelectedImage(item)}
-                >
+            {galleryImages.map((image, index) => (
+              <SlideIn key={image.id} delay={0.1 * (index + 1)}>
+                <Card className="overflow-hidden group cursor-pointer">
                   <div className="relative h-64">
                     <Image
-                      src={item.image}
-                      alt={item.title}
+                      src={image.image}
+                      alt={image.title}
                       fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="object-cover transition-transform duration-300 group-hover:scale-110"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={index < 6}
                     />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
+                      <h3 className="text-xl font-semibold mb-2">{image.title}</h3>
+                      <p className="text-sm">{image.description}</p>
+                    </div>
                   </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground">{item.description}</p>
-                  </CardContent>
                 </Card>
               </SlideIn>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Image Lightbox */}
-      {selectedImage && (
-        <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedImage(null)}
-        >
-          <div className="relative max-w-4xl w-full">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-4 right-4 text-white hover:text-white/80"
-              onClick={() => setSelectedImage(null)}
-            >
-              ✕
-            </Button>
-            <div className="relative h-[80vh]">
-              <Image
-                src={selectedImage.image}
-                alt={selectedImage.title}
-                fill
-                className="object-contain"
-              />
-            </div>
-            <div className="mt-4 text-center text-white">
-              <h3 className="text-xl font-semibold">{selectedImage.title}</h3>
-              <p className="text-sm text-white/80">{selectedImage.description}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* CTA Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="bg-primary text-primary-foreground rounded-lg p-8 text-center">
-            <FadeIn>
-              <h2 className="text-3xl font-bold mb-4">Want to See More?</h2>
-              <p className="text-lg mb-8 max-w-2xl mx-auto">
-                Follow us on social media for daily updates and more stunning photos from Ladakh.
-              </p>
-              <Button variant="secondary" size="lg">
-                Follow Us
-              </Button>
-            </FadeIn>
           </div>
         </div>
       </section>
