@@ -74,3 +74,48 @@ export async function sendPasswordResetEmail(to: string, resetLink: string) {
     `,
   });
 } 
+
+export async function sendBookingConfirmationEmail({
+  to,
+  name,
+  serviceName,
+  date,
+  endDate,
+  totalAmount,
+}: {
+  to: string;
+  name: string;
+  serviceName: string;
+  date: string;
+  endDate?: string;
+  totalAmount: number;
+}) {
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const formattedDate = new Date(date).toLocaleDateString();
+  const formattedEndDate = endDate ? new Date(endDate).toLocaleDateString() : null;
+
+  let dateText = formattedDate;
+  if (formattedEndDate && formattedEndDate !== formattedDate) {
+    dateText = `${formattedDate} to ${formattedEndDate}`;
+  }
+
+  const emailBody = `
+    Dear ${name},\n\nThank you for your booking!\n\nHere are your booking details:\n- Service: ${serviceName}\n- Date: ${dateText}\n- Total Amount: ₹${totalAmount}\n\nWe look forward to serving you!\n\nBest regards,\nThe Himalayan Adventures Team
+  `;
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to,
+    subject: 'Booking Confirmation',
+    text: emailBody,
+  });
+} 

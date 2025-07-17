@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
+import { sendBookingConfirmationEmail } from '../../../lib/email';
 
 const prisma = new PrismaClient();
 
@@ -87,6 +88,16 @@ export async function POST(request: NextRequest) {
       include: {
         service: true,
       },
+    });
+
+    // Send booking confirmation email to the user
+    await sendBookingConfirmationEmail({
+      to: booking.email,
+      name: booking.name,
+      serviceName: booking.service.name,
+      date: booking.date,
+      endDate: booking.endDate,
+      totalAmount: booking.totalAmount,
     });
 
     return NextResponse.json(booking, { status: 201 });
