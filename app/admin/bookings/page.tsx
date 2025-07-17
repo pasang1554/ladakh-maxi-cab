@@ -38,7 +38,7 @@ export default function AdminBookingsPage() {
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch('/api/admin/bookings')
+      const response = await fetch('../api/admin/bookings')
       if (response.ok) {
         const data = await response.json()
         setBookings(data)
@@ -54,7 +54,7 @@ export default function AdminBookingsPage() {
 
   const updateBookingStatus = async (bookingId: string, status: string, paymentStatus?: string) => {
     try {
-      const response = await fetch('/api/admin/bookings', {
+      const response = await fetch('../api/admin/bookings', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
