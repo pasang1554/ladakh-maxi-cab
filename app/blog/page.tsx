@@ -1,51 +1,45 @@
+'use client'
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { FadeIn, SlideIn, Scale, Stagger, StaggerItem } from "@/components/animations"
-
-const blogPosts = [
-  {
-    id: 1,
-    title: "Essential Tips for Riding in Ladakh",
-    excerpt: "Everything you need to know about riding motorcycles in the high-altitude region of Ladakh.",
-    image: "/images/blog/bike-tips.jpg",
-    date: "March 15, 2024",
-    readTime: "5 min read",
-    category: "Travel Tips",
-  },
-  {
-    id: 2,
-    title: "Best Homestays in Ladakh",
-    excerpt: "Discover the most authentic and comfortable homestays for your Ladakh experience.",
-    image: "/images/blog/homestays.jpg",
-    date: "March 10, 2024",
-    readTime: "4 min read",
-    category: "Accommodation",
-  },
-  {
-    id: 3,
-    title: "Must-Try Local Dishes",
-    excerpt: "A guide to the most delicious traditional dishes you should try in Ladakh.",
-    image: "/images/blog/food.jpg",
-    date: "March 5, 2024",
-    readTime: "6 min read",
-    category: "Food",
-  },
-  {
-    id: 4,
-    title: "Best Time to Visit Ladakh",
-    excerpt: "Learn about the different seasons and choose the perfect time for your Ladakh trip.",
-    image: "/images/blog/seasons.jpg",
-    date: "March 1, 2024",
-    readTime: "5 min read",
-    category: "Travel Tips",
-  },
-]
+import { useState } from "react"
+import { blogPosts } from "./posts"
 
 export default function BlogPage() {
+  // Newsletter state
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
+  const [newsletterMessage, setNewsletterMessage] = useState("");
+
+  async function handleNewsletterSubscribe(e: React.FormEvent) {
+    e.preventDefault();
+    setNewsletterLoading(true);
+    setNewsletterMessage("");
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: newsletterEmail }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setNewsletterMessage("Thank you for subscribing!");
+        setNewsletterEmail("");
+      } else {
+        setNewsletterMessage(data.message || data.error || "Subscription failed.");
+      }
+    } catch (err) {
+      setNewsletterMessage("Something went wrong. Please try again later.");
+    } finally {
+      setNewsletterLoading(false);
+    }
+  }
+
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
           <FadeIn>
@@ -58,29 +52,32 @@ export default function BlogPage() {
 
         {/* Blog Posts Grid */}
         <Stagger>
-          <div className="grid gap-8 md:grid-cols-2">
-            {blogPosts.map((post, index) => (
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {blogPosts.map((post: typeof blogPosts[number], index: number) => (
               <StaggerItem key={post.id}>
                 <Scale>
-                  <Card className="overflow-hidden">
-                    <div
-                      className="relative h-48 bg-cover bg-center"
-                      style={{
-                        backgroundImage: `url('${post.image}')`,
-                      }}
-                    />
-                    <CardContent className="p-6">
+                  <Card className="overflow-hidden h-full flex flex-col">
+                    <div className="relative h-48 bg-cover bg-center overflow-hidden">
+                      <img
+                        src={post.image}
+                        alt={post.title}
+                        className="w-full h-full object-cover blog-card-image"
+                      />
+                    </div>
+                    <CardContent className="p-6 flex-1 flex flex-col">
                       <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                         <span>{post.date}</span>
                         <span>•</span>
                         <span>{post.readTime}</span>
                         <span>•</span>
-                        <span>{post.category}</span>
+                        <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">
+                          {post.category}
+                        </span>
                       </div>
-                      <h2 className="text-2xl font-semibold mb-2">{post.title}</h2>
-                      <p className="text-muted-foreground mb-6">{post.excerpt}</p>
-                      <Link href={`/blog/${post.id}`}>
-                        <Button variant="ghost" className="w-full">
+                      <h2 className="text-xl font-semibold mb-2 line-clamp-2">{post.title}</h2>
+                      <p className="text-muted-foreground mb-6 flex-1 line-clamp-3">{post.excerpt}</p>
+                      <Link href={`/blog/${post.slug}`}>
+                        <Button variant="ghost" className="w-full mt-auto">
                           Read More
                         </Button>
                       </Link>
@@ -101,15 +98,33 @@ export default function BlogPage() {
             </p>
           </FadeIn>
           <SlideIn direction="up" delay={0.2}>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+            <form onSubmit={handleNewsletterSubscribe} className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email"
                 className="flex-1 px-4 py-2 rounded-md border border-input bg-background"
+                value={newsletterEmail}
+                onChange={e => setNewsletterEmail(e.target.value)}
+                required
+                disabled={newsletterLoading}
               />
-              <Button>Subscribe</Button>
-            </div>
+              <Button type="submit" disabled={newsletterLoading || !newsletterEmail}>
+                {newsletterLoading ? "Subscribing..." : "Subscribe"}
+              </Button>
+            </form>
+            {newsletterMessage && (
+              <div className="mt-4 text-sm text-center text-primary">
+                {newsletterMessage}
+              </div>
+            )}
           </SlideIn>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex justify-center mt-8 gap-2">
+          <button className="px-4 py-2 rounded bg-primary text-white">Page 1</button>
+          <button className="px-4 py-2 rounded bg-muted text-primary">Page 2</button>
+          <button className="px-4 py-2 rounded bg-muted text-primary">Page 3</button>
         </div>
       </div>
     </div>

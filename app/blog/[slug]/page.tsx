@@ -1,65 +1,20 @@
+import { notFound } from "next/navigation"
+import { blogPosts } from "../posts"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { FadeIn, SlideIn, Scale } from "@/components/animations"
 
-// This would typically come from a CMS or database
-const blogPost = {
-  id: 1,
-  title: "Essential Tips for Riding in Ladakh",
-  content: `
-    <p>Ladakh, with its high-altitude terrain and challenging roads, offers an unforgettable experience for motorcycle enthusiasts. Here are some essential tips to make your riding adventure safe and enjoyable.</p>
+type BlogPost = typeof blogPosts[number];
 
-    <h2>1. Acclimatization is Key</h2>
-    <p>Before starting your ride, spend at least 2-3 days in Leh to acclimatize to the high altitude. This will help prevent altitude sickness and ensure you're in the best condition for riding.</p>
-
-    <h2>2. Choose the Right Bike</h2>
-    <p>For Ladakh's terrain, we recommend bikes with:</p>
-    <ul>
-      <li>Engine capacity of 350cc or higher</li>
-      <li>Good ground clearance</li>
-      <li>Reliable suspension</li>
-      <li>Comfortable riding position</li>
-    </ul>
-
-    <h2>3. Pack Wisely</h2>
-    <p>Essential items to pack:</p>
-    <ul>
-      <li>Warm riding gear</li>
-      <li>Basic tools and spare parts</li>
-      <li>First aid kit</li>
-      <li>Emergency food and water</li>
-    </ul>
-
-    <h2>4. Plan Your Routes</h2>
-    <p>Popular routes include:</p>
-    <ul>
-      <li>Leh to Nubra Valley</li>
-      <li>Leh to Pangong Lake</li>
-      <li>Leh to Tso Moriri</li>
-    </ul>
-
-    <h2>5. Safety First</h2>
-    <p>Always wear proper safety gear and follow these guidelines:</p>
-    <ul>
-      <li>Wear a full-face helmet</li>
-      <li>Use proper riding boots</li>
-      <li>Carry a basic tool kit</li>
-      <li>Keep emergency contact numbers handy</li>
-    </ul>
-  `,
-  date: "March 15, 2024",
-  readTime: "5 min read",
-  category: "Travel Tips",
-  author: {
-    name: "Rajesh Kumar",
-    role: "Experienced Rider",
-    image: "/images/blog/author.jpg",
-  },
-  image: "/images/blog/bike-tips.jpg",
+interface BlogPostPageProps {
+  params: { slug: string };
 }
 
-export default function BlogPost() {
+export default function BlogPost({ params }: { params: { slug: string } }) {
+  const post = blogPosts.find((p: BlogPost) => p.slug === params.slug)
+  if (!post) return notFound()
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
@@ -67,21 +22,24 @@ export default function BlogPost() {
         <div className="text-center mb-12">
           <FadeIn>
             <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground mb-6">
-              <span>{blogPost.date}</span>
+              <span>{post.date}</span>
               <span>•</span>
-              <span>{blogPost.readTime}</span>
+              <span>{post.readTime}</span>
               <span>•</span>
-              <span>{blogPost.category}</span>
+              <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">
+                {post.category}
+              </span>
             </div>
-            <h1 className="text-4xl font-bold mb-6">{blogPost.title}</h1>
+            <h1 className="text-4xl font-bold mb-6">{post.title}</h1>
           </FadeIn>
           <SlideIn direction="up" delay={0.2}>
-            <div
-              className="relative h-[400px] bg-cover bg-center rounded-lg mb-8"
-              style={{
-                backgroundImage: `url('${blogPost.image}')`,
-              }}
-            />
+            <div className="relative h-[400px] rounded-lg mb-8 overflow-hidden">
+              <img
+                src={post.image}
+                alt={post.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
           </SlideIn>
         </div>
 
@@ -91,7 +49,7 @@ export default function BlogPost() {
             <FadeIn delay={0.3}>
               <div
                 className="prose prose-lg dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: blogPost.content }}
+                dangerouslySetInnerHTML={{ __html: post.content }}
               />
             </FadeIn>
           </div>
@@ -102,20 +60,18 @@ export default function BlogPost() {
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4 mb-4">
-                    <div
-                      className="w-16 h-16 rounded-full bg-cover bg-center"
-                      style={{
-                        backgroundImage: `url('${blogPost.author.image}')`,
-                      }}
-                    />
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-primary">
+                        {post.author?.name?.charAt(0) || "A"}
+                      </span>
+                    </div>
                     <div>
-                      <h3 className="font-semibold">{blogPost.author.name}</h3>
-                      <p className="text-sm text-muted-foreground">{blogPost.author.role}</p>
+                      <h3 className="font-semibold">{post.author?.name || "Author"}</h3>
+                      <p className="text-sm text-muted-foreground">{post.author?.role || "Travel Writer"}</p>
                     </div>
                   </div>
                   <p className="text-muted-foreground mb-4">
-                    {blogPost.author.name} is an experienced rider who has explored Ladakh extensively.
-                    He shares his knowledge to help others have a safe and memorable riding experience.
+                    {post.author?.name || "The author"} shares insights and tips for your Ladakh journey.
                   </p>
                   <Button variant="outline" className="w-full">
                     Follow Author
@@ -129,15 +85,11 @@ export default function BlogPost() {
                 <CardContent className="p-6">
                   <h3 className="font-semibold mb-4">Related Posts</h3>
                   <div className="space-y-4">
-                    <Link href="/blog/2" className="block hover:text-primary">
-                      Best Homestays in Ladakh
-                    </Link>
-                    <Link href="/blog/3" className="block hover:text-primary">
-                      Must-Try Local Dishes
-                    </Link>
-                    <Link href="/blog/4" className="block hover:text-primary">
-                      Best Time to Visit Ladakh
-                    </Link>
+                    {blogPosts.filter((p: BlogPost) => p.slug !== post.slug).slice(0, 4).map((related: BlogPost) => (
+                      <Link key={related.slug} href={`/blog/${related.slug}`} className="block hover:text-primary">
+                        {related.title}
+                      </Link>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -163,6 +115,11 @@ export default function BlogPost() {
               <Button>Subscribe</Button>
             </div>
           </SlideIn>
+        </div>
+        <div className="flex justify-center mt-8 gap-2">
+          <button className="px-4 py-2 rounded bg-primary text-white">Page 1</button>
+          <button className="px-4 py-2 rounded bg-muted text-primary">Page 2</button>
+          <button className="px-4 py-2 rounded bg-muted text-primary">Page 3</button>
         </div>
       </div>
     </div>

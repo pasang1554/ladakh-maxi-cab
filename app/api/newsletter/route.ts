@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server"
-import { z } from "zod"
-import { prisma } from "@/lib/db"
+import { PrismaClient, Prisma } from "@prisma/client"
 import { sendNewsletterConfirmation } from "@/lib/email"
 
-const newsletterSchema = z.object({
-  email: z.string().email("Invalid email address"),
-})
+const prisma = new PrismaClient()
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { email } = newsletterSchema.parse(body)
+    const { email } = body
 
     // Check if email already exists
     const existing = await prisma.newsletter.findUnique({
@@ -37,21 +34,34 @@ export async function POST(request: Request) {
       // Don't throw error, just log it
     }
 
-    return NextResponse.json(
-      { message: "Successfully subscribed to newsletter" },
-      { status: 200 }
-    )
+    return NextResponse.json(subscription, { status: 201 })
   } catch (error) {
-    if (error instanceof z.ZodError) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return NextResponse.json(
-        { errors: error.errors },
+        { error: "Email already subscribed" },
         { status: 400 }
       )
     }
-
     console.error("Newsletter subscription error:", error)
     return NextResponse.json(
-      { message: "Something went wrong" },
+      { message: "Error subscribing to newsletter" },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET() {
+  try {
+    const subscribers = await prisma.newsletter.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+
+    return NextResponse.json(subscribers)
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Error fetching subscribers" },
       { status: 500 }
     )
   }

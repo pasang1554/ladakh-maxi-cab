@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { prisma } from "@/lib/db"
+import { PrismaClient } from "@prisma/client"
 import { sendContactEmail } from "@/lib/email"
+
+const prisma = new PrismaClient()
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -12,16 +14,16 @@ const contactSchema = z.object({
 
 export async function GET() {
   try {
-    const messages = await prisma.contact.findMany({
+    const contacts = await prisma.contact.findMany({
       orderBy: {
-        createdAt: 'desc'
+        createdAt: "desc"
       }
     })
-    return NextResponse.json(messages)
+    return NextResponse.json(contacts)
   } catch (error) {
-    console.error('Failed to fetch messages:', error)
+    console.error('Failed to fetch contacts:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch messages' },
+      { error: 'Failed to fetch contacts' },
       { status: 500 }
     )
   }
@@ -29,37 +31,32 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    // Parse the request body
     const body = await request.json()
-    
-    // Validate the data
-    const validatedData = contactSchema.parse(body)
-    
-    // Save to database
-    const savedMessage = await prisma.contact.create({
-      data: validatedData
+    const { name, email, phone, message } = body
+
+    const contact = await prisma.contact.create({
+      data: {
+        name,
+        email,
+        phone,
+        message,
+      },
     })
 
     // Send email notification
     try {
       await sendContactEmail({
-        name: validatedData.name,
-        email: validatedData.email,
-        phone: validatedData.phone,
-        message: validatedData.message
+        name,
+        email,
+        phone,
+        message,
       })
     } catch (error) {
       console.error('Failed to send email:', error)
       // Continue execution even if email fails
     }
 
-    // Return success response
-    return NextResponse.json({
-      success: true,
-      message: "Thank you for your message. We'll get back to you soon!",
-      data: savedMessage
-    }, { status: 201 })
-
+    return NextResponse.json(contact, { status: 201 })
   } catch (error) {
     // Handle validation errors
     if (error instanceof z.ZodError) {

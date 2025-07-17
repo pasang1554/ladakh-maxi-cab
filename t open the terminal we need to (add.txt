@@ -1,0 +1,32 @@
+t open the terminal we need to (add ctrl alt T)
+(pwd) print working directory command
+if you want to open the root folder then we need to add ::::::::(cd) change directory and then forward slash (cd /)
+(ls) measn list it will show the list of all list that are tin computer like bin etc::::::::::::
+cd .. helps to go back to the previous directory
+----------------------------------------------------------------------------------------
+if you want to go the the the  documents then you need to use the (cd document)
+if you want to open the list then us (ls)
+              ------------if you want o copy then -----------------------
+use the 
+(cp test testcopy)-------> its showing like the cp means copy and test is the list in the document and testcopy is the new name forwhere we print we paste it in it
+then if we put ls then 
+it will shown like the (test testcopy) not the test
+                ------------if you want o remove (or delete then) then -----------------------
+use the 
+rm testcopy
+then the testcopy is gone
+it will show he test only it will delete the testcopy 
+
+----------------------------------------------------------------------------------------
+           ------------if you want to create the new folder then the -----------------------
+use the 
+(mkdir newfolder)
+mkdir is make directory 
+           ------------if you want o remove the new folder then -----------------------
+use the 
+(rmdir newfolder )
+rmdir is the remove directory 
+ if the folder has more files like test in it then we need to rmdir will not work then we need to use the 
+(rm -r test )
+------------if you want to see all the manually or the tutorial then we need to add the -----------------------
+man ls (it will show all the tutorails abut the ls)

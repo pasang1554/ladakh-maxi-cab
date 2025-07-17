@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { MapPin, Phone, Mail, Clock } from "lucide-react"
+import { MapPin, Phone, Mail, Clock, MessageCircle } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
+import { FaWhatsapp } from "react-icons/fa"
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -62,11 +63,11 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <section className="bg-muted py-20">
+      <section className="bg-muted py-12 md:py-20">
         <div className="container mx-auto px-4">
           <FadeIn>
-            <h1 className="text-4xl font-bold text-center mb-4">Contact Us</h1>
-            <p className="text-muted-foreground text-center max-w-2xl mx-auto">
+            <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">Contact Us</h1>
+            <p className="text-muted-foreground text-center max-w-2xl mx-auto text-sm md:text-base">
               Get in touch with us for any questions about our services or to plan your Ladakh adventure.
             </p>
           </FadeIn>
@@ -74,9 +75,9 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Info */}
-      <section className="py-16">
+      <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
             {[
               {
                 icon: MapPin,
@@ -86,12 +87,12 @@ export default function ContactPage() {
               {
                 icon: Phone,
                 title: "Call Us",
-                content: "+91 123-456-7890",
+                content: "+91 8492008932",
               },
               {
                 icon: Mail,
                 title: "Email Us",
-                content: "info@himalayanadventures.com",
+                content: "info@ladakhtourism.com",
               },
               {
                 icon: Clock,
@@ -101,10 +102,10 @@ export default function ContactPage() {
             ].map((item, index) => (
               <SlideIn key={item.title} delay={0.1 * (index + 1)}>
                 <Card>
-                  <CardContent className="p-6 text-center">
-                    <item.icon className="h-8 w-8 text-primary mx-auto mb-4" />
-                    <h3 className="font-semibold mb-2">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground">{item.content}</p>
+                  <CardContent className="p-4 md:p-6 text-center">
+                    <item.icon className="h-6 w-6 md:h-8 md:w-8 text-primary mx-auto mb-3 md:mb-4" />
+                    <h3 className="font-semibold mb-2 text-sm md:text-base">{item.title}</h3>
+                    <p className="text-xs md:text-sm text-muted-foreground">{item.content}</p>
                   </CardContent>
                 </Card>
               </SlideIn>
@@ -113,14 +114,56 @@ export default function ContactPage() {
         </div>
       </section>
 
+      {/* WhatsApp Section */}
+      <section className="py-12 md:py-16 bg-green-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <FadeIn>
+              <div className="bg-green-600 text-white rounded-lg p-6 md:p-8 mb-6 md:mb-8">
+                <FaWhatsapp className="h-12 w-12 md:h-16 md:w-16 mx-auto mb-4 text-green-500" />
+                <h2 className="text-2xl md:text-3xl font-bold mb-4">Chat with Us on WhatsApp</h2>
+                <p className="text-lg md:text-xl mb-4 md:mb-6">
+                  Get instant responses and quick assistance for all your Ladakh travel queries!
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-4 md:mb-6">
+                  <div className="bg-white/10 rounded-lg p-3 md:p-4">
+                    <h3 className="font-semibold mb-2 text-sm md:text-base">🏔️ Book Tours</h3>
+                    <p className="text-xs md:text-sm">Get instant quotes and book your adventure</p>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-3 md:p-4">
+                    <h3 className="font-semibold mb-2 text-sm md:text-base">🚗 Rent Vehicles</h3>
+                    <p className="text-xs md:text-sm">Bikes, cars, and SUVs for your journey</p>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-3 md:p-4">
+                    <h3 className="font-semibold mb-2 text-sm md:text-base">🏠 Accommodation</h3>
+                    <p className="text-xs md:text-sm">Find the perfect place to stay</p>
+                  </div>
+                </div>
+                <Button
+                  size="lg"
+                  className="bg-white text-green-600 hover:bg-gray-100 w-full sm:w-auto"
+                  onClick={() => {
+                    const message = encodeURIComponent("Hi! I'm interested in your Ladakh tourism services. Can you help me?")
+                    window.open(`https://wa.me/918492008932?text=${message}`, '_blank')
+                  }}
+                >
+                  <MessageCircle className="h-4 w-4 md:h-5 md:w-5 mr-2" />
+                  Start WhatsApp Chat
+                </Button>
+              </div>
+            </FadeIn>
+          </div>
+        </div>
+      </section>
+
       {/* Contact Form */}
-      <section className="py-16 bg-muted">
+      <section className="py-12 md:py-16 bg-muted">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
             <Card>
-              <CardContent className="p-8">
-                <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <CardContent className="p-6 md:p-8">
+                <h2 className="text-xl md:text-2xl font-bold mb-6">Send us a Message</h2>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
                   <div>
                     <Input
                       placeholder="Your Name"
@@ -158,6 +201,7 @@ export default function ContactPage() {
                       placeholder="Your Message"
                       {...register("message")}
                       className={errors.message ? "border-destructive" : ""}
+                      rows={4}
                     />
                     {errors.message && (
                       <p className="text-destructive text-sm mt-1">{errors.message.message}</p>
@@ -174,9 +218,9 @@ export default function ContactPage() {
       </section>
 
       {/* Map Section */}
-      <section className="py-16">
+      <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">
-          <div className="h-[400px] rounded-lg overflow-hidden">
+          <div className="h-[300px] md:h-[400px] rounded-lg overflow-hidden">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d26086.465939878766!2d77.57231673955077!3d34.16561999999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38fdeb21445fed85%3A0xd1bb09975086f710!2sLeh!5e0!3m2!1sen!2sin!4v1638859988000!5m2!1sen!2sin"
               width="100%"

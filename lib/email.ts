@@ -1,10 +1,23 @@
-import { Resend } from "resend"
+import nodemailer from 'nodemailer';
 
-if (!process.env.RESEND_API_KEY) {
-  throw new Error("Missing RESEND_API_KEY environment variable")
+export async function sendEmail({ to, subject, text }: { to: string, subject: string, text: string }) {
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to,
+    subject,
+    text,
+  });
 }
-
-export const resend = new Resend(process.env.RESEND_API_KEY)
 
 type ContactEmailData = {
   name: string
@@ -26,26 +39,38 @@ export async function sendContactEmail(data: ContactEmailData) {
 
 export async function sendNewsletterConfirmation(email: string) {
   try {
-    await resend.emails.send({
-      from: "Himalayan Adventures <newsletter@himalayanadventures.com>",
-      to: [email],
+    await sendEmail({
+      to: email,
       subject: "Welcome to our Newsletter!",
-      html: `
-        <h2>Welcome to Himalayan Adventures Newsletter!</h2>
-        <p>Thank you for subscribing to our newsletter. You'll now receive updates about:</p>
-        <ul>
-          <li>Latest travel tips and guides</li>
-          <li>Special offers and promotions</li>
-          <li>New destinations and experiences</li>
-          <li>Community stories and adventures</li>
-        </ul>
-        <p>Best regards,<br>The Himalayan Adventures Team</p>
+      text: `
+        Welcome to Himalayan Adventures Newsletter!\n\nThank you for subscribing to our newsletter. You'll now receive updates about:\n- Latest travel tips and guides\n- Special offers and promotions\n- New destinations and experiences\n- Community stories and adventures\n\nBest regards,\nThe Himalayan Adventures Team
       `,
-    })
-
+    });
     return { success: true }
   } catch (error) {
     console.error("Error sending newsletter confirmation:", error)
     return { success: false, error }
   }
+}
+
+export async function sendPasswordResetEmail(to: string, resetLink: string) {
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to,
+    subject: 'Password Reset Request',
+    html: `
+      <p>You requested a password reset.</p>
+      <p>Click <a href="${resetLink}">here</a> to reset your password. This link will expire in 1 hour.</p>
+    `,
+  });
 } 
