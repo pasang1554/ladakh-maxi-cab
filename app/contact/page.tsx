@@ -92,7 +92,7 @@ export default function ContactPage() {
               {
                 icon: Mail,
                 title: "Email Us",
-                content: "info@ladakhtourism.com",
+                content: "Ladakhmaxicabs1171@gmail.com",
               },
               {
                 icon: Clock,

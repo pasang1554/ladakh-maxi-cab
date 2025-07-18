@@ -130,7 +130,7 @@ const teamMembers = [
     image: "/images/team/sonam.jpg",
     bio: "Sonam Wangchuk is a passionate Ladakhi entrepreneur and local expert with over 15 years of experience in the tourism industry. Dedicated to sustainable travel and authentic experiences.",
     phone: "+918492008932",
-    email: "info@ladakhtourism.com",
+    email: "Ladakhmaxicabs1171@gmail.com",
     whatsapp: "918492008932",
   },
   {

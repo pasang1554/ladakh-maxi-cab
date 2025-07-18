@@ -1,121 +1,50 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-export async function sendEmail({ to, subject, text }: { to: string, subject: string, text: string }) {
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: Number(process.env.EMAIL_PORT),
-    secure: true, // true for 465, false for other ports
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
+const resend = new Resend(process.env.RESEND_API_KEY);
+// It's best to use a verified domain with Resend, but a default can be used for testing.
+const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
+
+interface ContactEmailProps {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+}
+
+export const sendContactEmail = async ({ name, email, phone, message }: ContactEmailProps) => {
+  await resend.emails.send({
+    from: `Contact Form <${fromEmail}>`,
+    to: 'ladakhmaxicabs1171@gmail.com',
+    subject: 'New Contact Form Submission',
+    reply_to: email,
+    html: `<p>New contact submission from <strong>${name}</strong> (${email}, ${phone}):</p><p>${message}</p>`,
   });
+};
 
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to,
-    subject,
-    text,
-  });
+interface BookingEmailProps {
+  name: string;
+  email: string;
+  phone: string;
+  packageName: string;
+  message?: string;
 }
 
-type ContactEmailData = {
-  name: string
-  email: string
-  phone: string
-  message: string
-}
-
-export async function sendContactEmail(data: ContactEmailData) {
-  // For now, just log the message
-  console.log('New contact form submission:')
-  console.log('From:', data.name)
-  console.log('Email:', data.email)
-  console.log('Phone:', data.phone)
-  console.log('Message:', data.message)
-  
-  return { success: true }
-}
-
-export async function sendNewsletterConfirmation(email: string) {
-  try {
-    await sendEmail({
-      to: email,
-      subject: "Welcome to our Newsletter!",
-      text: `
-        Welcome to Himalayan Adventures Newsletter!\n\nThank you for subscribing to our newsletter. You'll now receive updates about:\n- Latest travel tips and guides\n- Special offers and promotions\n- New destinations and experiences\n- Community stories and adventures\n\nBest regards,\nThe Himalayan Adventures Team
-      `,
-    });
-    return { success: true }
-  } catch (error) {
-    console.error("Error sending newsletter confirmation:", error)
-    return { success: false, error }
-  }
-}
-
-export async function sendPasswordResetEmail(to: string, resetLink: string) {
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: Number(process.env.EMAIL_PORT),
-    secure: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to,
-    subject: 'Password Reset Request',
+export const sendBookingEmail = async ({ name, email, phone, packageName, message }: BookingEmailProps) => {
+  await resend.emails.send({
+    from: `New Booking <${fromEmail}>`,
+    to: 'ladakhmaxicabs1171@gmail.com', // Your requested email for booking notifications
+    subject: `New Tour Booking: ${packageName}`,
+    reply_to: email,
     html: `
-      <p>You requested a password reset.</p>
-      <p>Click <a href="${resetLink}">here</a> to reset your password. This link will expire in 1 hour.</p>
+      <h1>New Tour Package Booking</h1>
+      <p>A new booking request has been received.</p>
+      <hr />
+      <h2>Booking Details:</h2>
+      <p><strong>Package:</strong> ${packageName}</p>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Phone:</strong> ${phone}</p>
+      ${message ? `<p><strong>Message:</strong> ${message}</p>` : ''}
     `,
   });
-} 
-
-export async function sendBookingConfirmationEmail({
-  to,
-  name,
-  serviceName,
-  date,
-  endDate,
-  totalAmount,
-}: {
-  to: string;
-  name: string;
-  serviceName: string;
-  date: string;
-  endDate?: string;
-  totalAmount: number;
-}) {
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: Number(process.env.EMAIL_PORT),
-    secure: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  const formattedDate = new Date(date).toLocaleDateString();
-  const formattedEndDate = endDate ? new Date(endDate).toLocaleDateString() : null;
-
-  let dateText = formattedDate;
-  if (formattedEndDate && formattedEndDate !== formattedDate) {
-    dateText = `${formattedDate} to ${formattedEndDate}`;
-  }
-
-  const emailBody = `
-    Dear ${name},\n\nThank you for your booking!\n\nHere are your booking details:\n- Service: ${serviceName}\n- Date: ${dateText}\n- Total Amount: ₹${totalAmount}\n\nWe look forward to serving you!\n\nBest regards,\nThe Himalayan Adventures Team
-  `;
-
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to,
-    subject: 'Booking Confirmation',
-    text: emailBody,
-  });
-} 
+};

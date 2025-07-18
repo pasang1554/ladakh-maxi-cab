@@ -171,7 +171,7 @@ export default function WhatsAppChat({
                     </div>
                     <div className="flex items-center gap-2">
                       <Mail className="h-3 w-3 md:h-4 md:w-4 text-green-600" />
-                      <span>info@ladakhtourism.com</span>
+                      <span>Ladakhmaxicabs1171@gmail.com</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-3 w-3 md:h-4 md:w-4 text-green-600" />
