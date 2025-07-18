@@ -173,7 +173,7 @@ export default function HomePage() {
       try {
         // Replace 'YOUR_API_KEY' with your OpenWeatherMap API key
         const res = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=Leh,IN&units=metric&appid=YOUR_API_KEY`
+          `https://api.openweathermap.org/data/2.5/weather?q=Leh,IN&units=metric&appid=${process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY}`
         );
         if (!res.ok) throw new Error("Weather fetch failed");
         const data = await res.json();
@@ -406,4 +406,3 @@ export default function HomePage() {
     </div>
   )
 }
-

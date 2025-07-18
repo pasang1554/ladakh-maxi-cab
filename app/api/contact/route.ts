@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { PrismaClient } from "@prisma/client"
+import { prisma } from "@/lib/prisma"
 import { sendContactEmail } from "@/lib/email"
-
-const prisma = new PrismaClient()
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -32,7 +30,9 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, email, phone, message } = body
+    
+    // Validate the request body using the Zod schema
+    const { name, email, phone, message } = contactSchema.parse(body);
 
     const contact = await prisma.contact.create({
       data: {

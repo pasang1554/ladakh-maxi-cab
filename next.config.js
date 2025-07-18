@@ -3,11 +3,13 @@ const nextConfig = {
   reactStrictMode: true,
   
   typescript: {
-    ignoreBuildErrors: true, // ⛔ Ignore TypeScript errors during build
+    // It's best practice to set this to false for production builds.
+    ignoreBuildErrors: false,
   },
 
   eslint: {
-    ignoreDuringBuilds: true, // ⛔ Ignore ESLint errors during build
+    // It's best practice to set this to false for production builds.
+    ignoreDuringBuilds: false,
   },
 
   images: {
