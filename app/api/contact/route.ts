@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { prisma } from "@/lib/db"
+import { prisma } from "@/lib/prisma"
 import { sendContactEmail } from "@/lib/email"
 
 const contactSchema = z.object({
@@ -30,10 +30,16 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    
-    // Validate the request body using the Zod schema
-    const { name, email, phone, message } = contactSchema.parse(body);
 
+    const validation = contactSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json({
+        error: "Invalid input", issues: validation.error.flatten()
+      }, { status: 400 });
+    }
+
+    const { name, email, phone, message } = validation.data;
     const contact = await prisma.contact.create({
       data: {
         name,
@@ -58,20 +64,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json(contact, { status: 201 })
   } catch (error) {
-    // Handle validation errors
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        success: false,
-        message: "Validation failed",
-        errors: error.errors
-      }, { status: 400 })
-    }
-
     // Handle other errors
     console.error('Contact form error:', error)
     return NextResponse.json({
-      success: false,
-      message: "Something went wrong. Please try again later."
+      error: "Something went wrong. Please try again later."
     }, { status: 500 })
   }
 } 

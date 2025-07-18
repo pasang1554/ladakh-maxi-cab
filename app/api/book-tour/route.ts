@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 import { sendBookingEmail } from "@/lib/email";
 
 const bookingSchema = z.object({
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const booking = await prisma.booking.create({
       data: {
         name, email, phone,
-        serviceId: packageName,
+        package: packageName,
         message: message || "",
         date: new Date(), // NOTE: The form is missing a date field. Using today's date as a placeholder.
         status: 'PENDING',
