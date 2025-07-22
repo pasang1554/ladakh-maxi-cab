@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id")
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   email     String   @unique
   password  String
   name      String
@@ -24,17 +24,17 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  bookings Booking[] @relation(fields: [id], references: [userId])
-  contacts Contact[] @relation(fields: [id], references: [userId])
+  bookings Booking[]
+  contacts Contact[]
 }
 
 model Contact {
-  id        String   @id @default(auto()) @map("_id")
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String
   phone     String
   message   String
-  userId    String?
+  userId    String? @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -43,14 +43,14 @@ model Contact {
 }
 
 model Newsletter {
-  id        String   @id @default(auto()) @map("_id")
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   email     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model BlogPost {
-  id        String   @id @default(auto()) @map("_id")
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   slug      String   @unique
   excerpt   String
@@ -65,7 +65,7 @@ model BlogPost {
 }
 
 model Service {
-  id          String   @id @default(auto()) @map("_id")
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
   image       String
@@ -77,13 +77,13 @@ model Service {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  bookings Booking[] @relation(fields: [id], references: [serviceId])
+  bookings Booking[]
 }
 
 model Booking {
-  id        String   @id @default(auto()) @map("_id")
-  serviceId String
-  userId    String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  serviceId String   @db.ObjectId
+  userId    String   @db.ObjectId
   name      String
   email     String
   phone     String
