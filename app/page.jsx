@@ -6,7 +6,8 @@ import Link from "next/link"
 import { FadeIn, SlideIn, Scale, Stagger, StaggerItem } from "@/components/animations"
 import { useState, useEffect } from "react"
 import TourPackages from '../components/TourPackages'
-import { FaWhatsapp } from 'react-icons/fa';
+import { FaWhatsapp, FaRegSun, FaRegMoon } from 'react-icons/fa';
+import { FaCheckCircle, FaUserFriends, FaHeadset, FaStar, FaCar, FaMotorcycle, FaHome, FaUtensils, FaHiking, FaMapMarkedAlt, FaPhoneAlt, FaHospital, FaShieldAlt } from 'react-icons/fa';
 
 const featuredServices = [
   {
@@ -164,6 +165,10 @@ export default function HomePage() {
     return () => clearInterval(interval)
   }, [])
 
+  // Carousel navigation handlers
+  const goToPrev = () => setCurrent((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
+  const goToNext = () => setCurrent((prev) => (prev + 1) % carouselImages.length);
+
   // Weather state
   const [weather, setWeather] = useState(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
@@ -192,10 +197,13 @@ export default function HomePage() {
     fetchWeather();
   }, []);
 
+  const [theme, setTheme] = useState('light');
+  const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
+
   return (
-    <div>
+    <div className={theme === 'dark' ? 'dark bg-gradient-to-b from-gray-900 via-gray-800 to-gray-700 text-white' : 'bg-gradient-to-b from-blue-50 via-white to-yellow-50'}>
       {/* Carousel Section */}
-      <section className="relative h-[60vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[80vh] md:h-[95vh] flex items-center justify-center overflow-hidden">
         {carouselImages.map((img, idx) => (
           <img
             key={img}
@@ -231,6 +239,23 @@ export default function HomePage() {
             </div>
           </SlideIn>
         </div>
+        {/* Carousel navigation arrows */}
+        <button
+          onClick={goToPrev}
+          aria-label="Previous slide"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-40 bg-black/40 hover:bg-black/70 text-white rounded-full p-3 shadow-lg focus:outline-none"
+          style={{fontSize: '2rem'}}
+        >
+          &#8592;
+        </button>
+        <button
+          onClick={goToNext}
+          aria-label="Next slide"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-40 bg-black/40 hover:bg-black/70 text-white rounded-full p-3 shadow-lg focus:outline-none"
+          style={{fontSize: '2rem'}}
+        >
+          &#8594;
+        </button>
         {/* Carousel dots */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-30">
           {carouselImages.map((_, idx) => (
@@ -244,7 +269,7 @@ export default function HomePage() {
         </div>
       </section>
       {/* Weather Widget Section */}
-      <section className="py-6 bg-blue-50 border-b border-blue-100 flex justify-center">
+      <section className="py-6 bg-blue-50 border-b border-blue-100 flex justify-center animate-fade-in">
         <div className="flex items-center gap-4">
           <img
             src={weather?.icon}
@@ -265,7 +290,7 @@ export default function HomePage() {
         </div>
       </section>
       {/* History of Ladakh Section */}
-      <section className="py-12 md:py-16 bg-muted/50">
+      <section className="py-12 md:py-16 bg-muted/50 animate-fade-in-up">
         <div className="container mx-auto px-4 max-w-3xl text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">History of Ladakh</h2>
           <p className="text-lg text-muted-foreground mb-4">
@@ -277,7 +302,7 @@ export default function HomePage() {
         </div>
       </section>
       {/* Festivals Calendar Section */}
-      <section className="py-12 md:py-16 bg-yellow-50 border-b border-yellow-100">
+      <section className="py-12 md:py-16 bg-yellow-50 border-b border-yellow-100 animate-fade-in-up">
         <div className="container mx-auto px-4 max-w-3xl text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">Festivals Calendar 2025</h2>
           <p className="text-muted-foreground mb-6">Major festivals celebrated in Ladakh with dates and locations.</p>
@@ -304,7 +329,7 @@ export default function HomePage() {
         </div>
       </section>
       {/* Tour Packages Section on Home - moved below calendar */}
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 animate-fade-in-up">
         <TourPackages />
         <div className="flex justify-center mt-4">
           <Button asChild>
@@ -313,12 +338,12 @@ export default function HomePage() {
         </div>
       </div>
       {/* Our Services Section */}
-      <section className="py-12 md:py-16">
+      <section className="py-12 md:py-16 bg-gradient-to-br from-white to-blue-50 animate-fade-in-up">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">Our Services</h2>
           <div className="grid gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {featuredServices.map((service, index) => (
-              <div key={index} className="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+              <div key={index} className="bg-white dark:bg-gray-900 rounded-lg shadow p-6 flex flex-col items-center">
                 <service.icon className="h-10 w-10 mb-4 text-primary" />
                 <h3 className="text-lg font-semibold mb-2">{service.title}</h3>
                 <p className="text-muted-foreground text-sm mb-4 text-center">{service.description}</p>
@@ -336,9 +361,27 @@ export default function HomePage() {
         </div>
       </section>
       {/* Why Choose Us Section */}
-      <section className="py-12 md:py-16 bg-primary/5">
+      <section className="py-12 md:py-16 bg-primary/5 animate-fade-in-up">
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">Why Choose Us?</h2>
+          <div className="flex flex-wrap justify-center gap-6 mb-4">
+            <div className="flex flex-col items-center w-40">
+              <FaCheckCircle className="text-primary text-3xl mb-2" />
+              <span className="font-medium">Trusted Operator</span>
+            </div>
+            <div className="flex flex-col items-center w-40">
+              <FaUserFriends className="text-primary text-3xl mb-2" />
+              <span className="font-medium">Local Experts</span>
+            </div>
+            <div className="flex flex-col items-center w-40">
+              <FaHeadset className="text-primary text-3xl mb-2" />
+              <span className="font-medium">24/7 Support</span>
+            </div>
+            <div className="flex flex-col items-center w-40">
+              <FaStar className="text-yellow-500 text-3xl mb-2" />
+              <span className="font-medium">Top Rated</span>
+            </div>
+          </div>
           <p className="text-lg text-muted-foreground mb-4">
             We are your one-stop solution for all tourism services in Ladakh:
             <br />
@@ -349,28 +392,51 @@ export default function HomePage() {
           </p>
         </div>
       </section>
+      {/* Testimonials Section */}
+      <section className="py-12 bg-gradient-to-r from-yellow-50 to-blue-50 animate-fade-in-up">
+        <div className="container mx-auto px-4 max-w-3xl text-center">
+          <h2 className="text-2xl md:text-3xl font-bold mb-6">What Our Customers Say</h2>
+          <div className="flex gap-6 overflow-x-auto snap-x pb-4">
+            {testimonials.map((t, idx) => (
+              <Card key={idx} className="min-w-[320px] max-w-md mx-auto snap-center shadow-lg border-primary/10">
+                <CardContent className="p-6 flex flex-col items-center">
+                  <FaStar className="text-yellow-400 text-2xl mb-2" />
+                  <p className="text-muted-foreground mb-4 italic">"{t.text}"</p>
+                  <div className="font-semibold text-primary mb-1">{t.author}</div>
+                  <div className="text-xs text-muted-foreground">{t.location}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
       {/* Important Contacts Section */}
-      <section className="py-12 md:py-16 bg-muted/50">
+      <section className="py-12 md:py-16 bg-muted/50 animate-fade-in-up">
         <div className="container mx-auto px-4 max-w-3xl">
           <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Important Contacts</h2>
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="bg-white rounded-lg shadow p-4 flex flex-col">
+            <div className="bg-white rounded-lg shadow p-4 flex flex-col items-center">
+              <FaShieldAlt className="text-primary text-2xl mb-1" />
               <span className="font-semibold">Ladakh Police</span>
               <a href="tel:100" className="text-blue-600 hover:underline">100</a>
             </div>
-            <div className="bg-white rounded-lg shadow p-4 flex flex-col">
+            <div className="bg-white rounded-lg shadow p-4 flex flex-col items-center">
+              <FaMapMarkedAlt className="text-primary text-2xl mb-1" />
               <span className="font-semibold">Tourism Office (Leh)</span>
               <a href="tel:+911982252297" className="text-blue-600 hover:underline">+91 1982 252297</a>
             </div>
-            <div className="bg-white rounded-lg shadow p-4 flex flex-col">
+            <div className="bg-white rounded-lg shadow p-4 flex flex-col items-center">
+              <FaHospital className="text-primary text-2xl mb-1" />
               <span className="font-semibold">SNM Hospital (Leh)</span>
               <a href="tel:+911982252010" className="text-blue-600 hover:underline">+91 1982 252010</a>
             </div>
-            <div className="bg-white rounded-lg shadow p-4 flex flex-col">
+            <div className="bg-white rounded-lg shadow p-4 flex flex-col items-center">
+              <FaPhoneAlt className="text-primary text-2xl mb-1" />
               <span className="font-semibold">Emergency/Rescue</span>
               <a href="tel:112" className="text-blue-600 hover:underline">112</a>
             </div>
-            <div className="bg-white rounded-lg shadow p-4 flex flex-col">
+            <div className="bg-white rounded-lg shadow p-4 flex flex-col items-center">
+              <FaWhatsapp className="text-green-600 text-2xl mb-1" />
               <span className="font-semibold">Your Business/WhatsApp</span>
               <a href="tel:+918492008932" className="text-green-600 hover:underline">+91 84920 08932</a>
               <a href="https://wa.me/918492008932" target="_blank" rel="noopener" className="text-green-600 hover:underline">
@@ -381,21 +447,26 @@ export default function HomePage() {
         </div>
       </section>
       {/* Meet the Team Section */}
-      <section className="py-12 md:py-16 bg-white">
+      <section className="py-12 md:py-16 bg-white animate-fade-in-up">
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">Meet the Team</h2>
-          <div className="grid gap-8 md:grid-cols-2">
+          <div className="flex justify-center mb-6">
+            <span className="bg-primary text-primary-foreground px-4 py-2 rounded-full font-semibold text-base shadow inline-block">
+              Ladakh Maxi Cab — Your Tour Operator
+            </span>
+          </div>
+          <div className="grid gap-8 md:grid-cols-2 justify-center">
             {teamMembers.map((member, idx) => (
-              <div key={idx} className="flex flex-col items-center bg-muted/50 rounded-lg p-6 shadow">
-                <img src={member.image} alt={member.name} className="w-28 h-28 rounded-full object-cover mb-3 border-4 border-primary" />
-                <h3 className="text-xl font-semibold mb-1">{member.name}</h3>
-                <p className="text-primary font-medium mb-2">{member.role}</p>
-                <p className="text-muted-foreground mb-3">{member.bio}</p>
-                <div className="flex flex-col items-center gap-1">
+              <div key={idx} className="bg-white rounded-xl shadow flex flex-col items-center max-w-xs w-full mx-auto p-6 border border-primary/10 hover:shadow-lg transition-all">
+                <img src={member.image} alt={member.name} className="w-32 h-32 rounded-full object-cover mb-3 border-4 border-primary" />
+                <h3 className="text-lg font-semibold mb-1 text-primary">{member.name}</h3>
+                <p className="text-primary font-medium mb-2 text-sm">{member.role === 'Founder & Local Expert' ? 'Tour Operations Head' : member.role}</p>
+                <p className="text-muted-foreground mb-4 text-xs line-clamp-3 min-h-[48px]">{member.name === 'Sonam Wangchuk' ? 'Head of Ladakh Maxi Cab, overseeing all tour operations and ensuring the best travel experience for every guest.' : member.bio}</p>
+                <div className="flex flex-col items-center gap-1 mt-auto text-xs">
                   <a href={`tel:${member.phone}`} className="text-blue-600 hover:underline">{member.phone}</a>
                   <a href={`mailto:${member.email}`} className="text-blue-600 hover:underline">{member.email}</a>
                   <a href={`https://wa.me/${member.whatsapp}`} target="_blank" rel="noopener" className="text-green-600 hover:underline">
-                    <FaWhatsapp className="inline-block w-5 h-5 mr-1 text-green-600" />Chat on WhatsApp
+                    <span className="inline-block align-middle mr-1">💬</span>WhatsApp
                   </a>
                 </div>
               </div>
