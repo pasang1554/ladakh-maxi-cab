@@ -35,7 +35,7 @@ export async function POST(request: Request) {
 
     if (!validation.success) {
       return NextResponse.json({
-        error: "Invalid input", issues: validation.error.flatten()
+          error: "Invalid input", issues: validation.error.flatten()
       }, { status: 400 });
     }
 

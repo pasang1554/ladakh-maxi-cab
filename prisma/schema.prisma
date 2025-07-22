@@ -1,4 +1,4 @@
-// This is your Prisma schema file,
+// This is your Prisma schema file for MongoDB
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
@@ -6,12 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id")
   email     String   @unique
   password  String
   name      String
@@ -22,14 +22,14 @@ model User {
   resetTokenExpiry DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Relations
-  bookings Booking[]
-  contacts Contact[]
+  bookings Booking[] @relation(fields: [id], references: [userId])
+  contacts Contact[] @relation(fields: [id], references: [userId])
 }
 
 model Contact {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id")
   name      String
   email     String
   phone     String
@@ -37,20 +37,20 @@ model Contact {
   userId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Relations
   user      User?    @relation(fields: [userId], references: [id])
 }
 
 model Newsletter {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id")
   email     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model BlogPost {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id")
   title     String
   slug      String   @unique
   excerpt   String
@@ -65,7 +65,7 @@ model BlogPost {
 }
 
 model Service {
-  id          String   @id @default(cuid())
+  id          String   @id @default(auto()) @map("_id")
   title       String
   description String
   image       String
@@ -75,13 +75,13 @@ model Service {
   features    String   // JSON string of features array
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   // Relations
-  bookings Booking[]
+  bookings Booking[] @relation(fields: [id], references: [serviceId])
 }
 
 model Booking {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id")
   serviceId String
   userId    String
   name      String
@@ -95,8 +95,8 @@ model Booking {
   paymentStatus String @default("pending") // pending, paid, refunded
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // Relations
-  user      User     @relation(fields: [userId], references: [id])
-  service   Service  @relation(fields: [serviceId], references: [id])
+  user      User?     @relation(fields: [userId], references: [id])
+  service   Service?  @relation(fields: [serviceId], references: [id])
 } 
